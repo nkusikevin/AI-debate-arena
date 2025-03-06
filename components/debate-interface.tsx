@@ -87,16 +87,7 @@ export default function DebateInterface() {
 
     setMessages([initialMessage])
 
-    // Security warning message
-    const securityWarning: Message = {
-      id: "2",
-      role: "system",
-      content: `⚠️ SECURITY WARNING: This demo uses API keys directly in the browser. In a production environment, you should use server-side API calls to protect your API keys.`,
-      timestamp: new Date(),
-      modelName: "System",
-    }
 
-    setMessages((prev) => [...prev, securityWarning])
 
     // Start the real debate with API calls
     try {
@@ -107,7 +98,6 @@ export default function DebateInterface() {
       setIsDebating(false)
     }
   }
-
   const runDebate = async () => {
     const rounds = iterations
 
@@ -116,101 +106,72 @@ export default function DebateInterface() {
       try {
         const model1Response = await generateDebateResponse(
           {
-            provider: "openai",
-            model: model1Config.model,
-            temperature: model1Config.temperature,
-            maxTokens: model1Config.maxTokens,
-            name: model1Config.name,
-            apiKey: model1Config.apiKey,
-            personality: model1Config.personality,
+            ...model1Config,
+            position: "proposition"
           },
           topic,
-          messages,
+          messages
         )
 
-        const model1Message: Message = {
-          id: Date.now().toString(),
-          role: "assistant",
-          content: model1Response,
-          timestamp: new Date(),
-          modelName: model1Config.name,
-        }
-
-        setMessages((prev) => [...prev, model1Message])
-        await new Promise((resolve) => setTimeout(resolve, 500)) // Small delay for UI
-      } catch (error) {
-        console.error("Error with model 1:", error)
-        setMessages((prev) => [
+        setMessages(prev => [
           ...prev,
           {
             id: Date.now().toString(),
-            role: "system",
-            content: `Error generating response from ${model1Config.name}. Please check your API key and try again.`,
+            role: "assistant",
+            content: model1Response,
             timestamp: new Date(),
-            modelName: "System",
-          },
+            modelName: model1Config.name
+          }
         ])
-        setIsDebating(false)
-        return
-      }
 
-      // Second debater's turn
-      try {
+        // Add a small delay between responses
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        // Second debater's turn
         const model2Response = await generateDebateResponse(
           {
-            provider: "xai",
-            model: model2Config.model,
-            temperature: model2Config.temperature,
-            maxTokens: model2Config.maxTokens,
-            name: model2Config.name,
-            apiKey: model2Config.apiKey,
-            personality: model2Config.personality,
+            ...model2Config,
+            position: "opposition"
           },
           topic,
-          messages,
+          messages
         )
 
-        const model2Message: Message = {
-          id: Date.now().toString(),
-          role: "assistant",
-          content: model2Response,
-          timestamp: new Date(),
-          modelName: model2Config.name,
-        }
-
-        setMessages((prev) => [...prev, model2Message])
-        await new Promise((resolve) => setTimeout(resolve, 500)) // Small delay for UI
-      } catch (error) {
-        console.error("Error with model 2:", error)
-        setMessages((prev) => [
+        setMessages(prev => [
           ...prev,
           {
             id: Date.now().toString(),
-            role: "system",
-            content: `Error generating response from ${model2Config.name}. Please check your API key and try again.`,
+            role: "assistant",
+            content: model2Response,
             timestamp: new Date(),
-            modelName: "System",
-          },
+            modelName: model2Config.name
+          }
         ])
+
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      } catch (error) {
+        console.error("Error in debate round:", error)
+        setError("An error occurred during the debate. Please check the console for details.")
         setIsDebating(false)
         return
       }
     }
 
-    // Conclude the debate
-    setMessages((prev) => [
+    // Add concluding message
+    setMessages(prev => [
       ...prev,
       {
         id: Date.now().toString(),
         role: "system",
         content: "The debate has concluded. Thank you to both participants.",
         timestamp: new Date(),
-        modelName: "System",
-      },
+        modelName: "System"
+      }
     ])
 
     setIsDebating(false)
   }
+
 
   const resetDebate = () => {
     setIsDebating(false)
@@ -241,17 +202,7 @@ export default function DebateInterface() {
                   LLM Configuration
                 </h2>
 
-                {/* Security Warning */}
-                <div className="p-3 bg-yellow-900/30 border border-yellow-700/50 rounded-lg text-yellow-300 text-sm flex gap-2">
-                  <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium mb-1">Security Warning</p>
-                    <p>
-                      This demo uses API keys directly in the browser. For production use, implement server-side API
-                      calls.
-                    </p>
-                  </div>
-                </div>
+
 
                 <div className="w-full glass-card rounded-xl p-1 mb-4">
                   <div className="grid grid-cols-2 gap-1 w-full">

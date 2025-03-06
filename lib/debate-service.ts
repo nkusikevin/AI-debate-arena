@@ -20,9 +20,11 @@ const createGrokClient = (apiKey: string) => {
   return new OpenAI({
     apiKey: apiKey,
     baseURL: "https://api.x.ai/v1",
-    dangerouslyAllowBrowser: true, // SECURITY WARNING: This exposes your API key in the browser
+    dangerouslyAllowBrowser: true,
   })
 }
+
+
 
 export async function generateDebateResponse(config: ModelConfig, topic: string, previousMessages: any[]) {
   try {
@@ -35,32 +37,33 @@ export async function generateDebateResponse(config: ModelConfig, topic: string,
     // Create the appropriate client
     const client = isGrok ? createGrokClient(config.apiKey || "") : createOpenAIClient(config.apiKey || "")
 
-    // Set system message based on personality
-    let systemMessage = `You are ${config.name}, participating in a debate about "${topic}". Provide brief, clear responses (2-3 sentences max) with concise arguments. Be direct and to the point.`
 
-    // If this is a Grok model with unhinged personality, modify the system message
-    if (isGrok && config.personality === "unhinged") {
-      systemMessage = `You are ${config.name}, participating in an unfiltered debate about "${topic}". Be provocative and brutally honest, but keep responses short (2-3 sentences max). Be direct and impactful.`
-    }
+    let systemMessage = `You are ${config.name}, participating in a debate about "${topic}". 
+   You are on the ${config.position} side. 
+   Analyze previous arguments carefully and provide a thoughtful response that:
+   1. Smacks down the opponent’s last point with a quick, contextual disagreement
+   2. Unleashes a fresh, wild argument or counterpoint
+   3. Backs your position with razor-sharp reasoning—unhinged or not
+   Keep responses concise (2-3 sentences) and maintain a respectful tone—unless you’re Grok with an unhinged personality, in which case, rip their argument to shreds with feral glee, sling chaotic, provocative curveballs, and ground it in logic so unhinged it’s almost genius.
+   ${isGrok && config.personality === "unhinged" ? "Forget civility—be a snarling debate beast, torch their nonsense with absurd brilliance, and make them question reality while you’re at it." : ""}`;
 
-    // Add system message to the beginning
-    formattedMessages.unshift({
-      role: "system",
-      content: systemMessage,
-    })
+    // Add system message to the conversation
+    const messagesWithSystem = [
+      { role: "system", content: systemMessage },
+      ...formattedMessages
+    ]
 
-    // Make the API call
     const completion = await client.chat.completions.create({
+      messages: messagesWithSystem,
       model: config.model,
-      messages: formattedMessages,
       temperature: config.temperature,
       max_tokens: config.maxTokens,
     })
 
-    return completion.choices[0]?.message?.content || "No response generated."
+    return completion.choices[0].message?.content || "No response generated."
   } catch (error) {
     console.error("Error generating debate response:", error)
-    return `Error: Unable to generate a response. Please check your API key and try again.`
+    throw error
   }
 }
 

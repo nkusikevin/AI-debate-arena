@@ -18,13 +18,13 @@ export interface LLMConfig {
   personality?: string
 }
 
-export interface ModelConfig {
-  provider: string
+
+export type ModelConfig = {
   model: string
+  name: string
+  apiKey: string
   temperature: number
   maxTokens: number
-  name: string
-  apiKey?: string
   personality?: string
+  position: 'proposition' | 'opposition'
 }
-

@@ -21,6 +21,7 @@ export default function DebateArena() {
     temperature: 0.7,
     maxTokens: 500,
     name: "Debater 1",
+    position: "proposition",
   })
   const [model2Config, setModel2Config] = useState<ModelConfig>({
     provider: "anthropic",
@@ -28,6 +29,7 @@ export default function DebateArena() {
     temperature: 0.7,
     maxTokens: 500,
     name: "Debater 2",
+    position: "opposition",
   })
 
   const startDebate = async () => {
@@ -52,47 +54,96 @@ export default function DebateArena() {
     }
   }
 
-  const simulateDebate = async () => {
-    // In a real implementation, this would use the AI SDK to generate responses
-    // from the selected models, but for demo purposes we'll simulate the debate
 
+
+  const simulateDebate = async () => {
     const rounds = 3 // Number of back-and-forth exchanges
+    let previousResponse = `Let's debate the topic: "${topic}"`
 
     for (let i = 0; i < rounds; i++) {
-      // First debater's turn
+      // First debater's turn - responding to previous argument
       await new Promise((resolve) => setTimeout(resolve, 1000))
+      const model1Response = await generateDebateResponse({
+        model: model1Config,
+        previousArgument: previousResponse,
+        isFirstTurn: i === 0,
+        topic,
+      })
+
       setDebateMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          name: model1Config.name,
-          content: `As ${model1Config.name} using ${model1Config.provider}'s ${model1Config.model}, I would argue that regarding "${topic}", we should consider the following points... [Simulated response for demonstration]`,
+          content: model1Response,
+          modelName: model1Config.name,
+          timestamp: new Date(),
         },
       ])
 
-      // Second debater's turn
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      previousResponse = model1Response // Update previous response
+
+      // Second debater's turn - responding to first debater's argument
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const model2Response = await generateDebateResponse({
+        model: model2Config,
+        previousArgument: model1Response,
+        isFirstTurn: false,
+        topic,
+      })
+
       setDebateMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          name: model2Config.name,
-          content: `I appreciate the points made by ${model1Config.name}, but as ${model2Config.name} using ${model2Config.provider}'s ${model2Config.model}, I would counter that... [Simulated response for demonstration]`,
+          content: model2Response,
+          modelName: model2Config.name,
+          timestamp: new Date(),
         },
       ])
+
+      previousResponse = model2Response 
     }
 
-    // Conclude the debate
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Add closing message
     setDebateMessages((prev) => [
       ...prev,
       {
         role: "system",
         content: "The debate has concluded. Thank you to both participants.",
+        modelName: "System",
+        timestamp: new Date(),
       },
     ])
 
     setIsDebating(false)
+  }
+
+  // Helper function to generate debate responses
+  const generateDebateResponse = async ({
+    model,
+    previousArgument,
+    isFirstTurn,
+    topic,
+  }: {
+    model: ModelConfig
+    previousArgument: string
+    isFirstTurn: boolean
+    topic: string
+  }) => {
+    // In a real implementation, you would call your AI API here
+    // For now, we'll simulate responses
+    const prompt = isFirstTurn
+      ? `As ${model.name}, present your opening argument on the topic: "${topic}"`
+      : `As ${model.name}, respond to the following argument while debating the topic "${topic}": "${previousArgument}"`
+
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    // Return simulated response
+    return `[${model.name}'s ${isFirstTurn ? "opening argument" : "rebuttal"}] ${isFirstTurn
+      ? "Let me present my perspective on this topic..."
+      : "In response to the previous argument..."
+      } [Simulated AI response based on ${model.model}]`
   }
 
   const resetDebate = () => {
