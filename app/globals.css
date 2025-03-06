@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 263.4 70% 50.4%;
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply backdrop-blur-md bg-black/30 border border-white/10;
+  }
+
+  .glass-card {
+    @apply backdrop-blur-md bg-black/20 border border-white/10 shadow-lg;
+  }
+
+  .glass-input {
+    @apply backdrop-blur-md bg-black/20 border-white/10 focus:border-primary/50;
+  }
+
+  .system-message {
+    @apply bg-gray-800/80 border border-gray-700/80 shadow-lg;
+  }
+
+  .model1-message {
+    @apply bg-blue-950/70 border border-blue-700/50 shadow-lg text-blue-50;
+  }
+
+  .model2-message {
+    @apply bg-purple-950/70 border border-purple-700/50 shadow-lg text-purple-50;
+  }
+
+  /* Hide scrollbar but maintain functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  /* Model switch styles for light/dark mode */
+  .model-switch-inactive {
+    @apply text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-black/40;
+  }
+}
+
