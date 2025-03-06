@@ -21,21 +21,17 @@ A sophisticated web application that allows you to configure and watch AI langua
 - **shadcn/ui**: High-quality UI components
 - **OpenAI API**: For accessing GPT models
 
-
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/ai-debate-arena.git
    cd ai-debate-arena
    ```
 
-2. Create a `.env.local` file in the root directory:
-   ```bash
-   cp .env.example .env.local
-   ```
+2. Install dependencies:
 
-3. Install dependencies:
    ```bash
    npm install
    # or
@@ -44,27 +40,29 @@ A sophisticated web application that allows you to configure and watch AI langua
    pnpm install
    ```
 
-4. Configure your environment variables in the left sidebar of the application
+3. Configure your environment variables in the left sidebar of the application
    ```env
-  you will need to add your API keys for the different models you want to use 
-  you can get the keys from the following links:
-  - [OpenAI](https://platform.openai.com/api-keys)
-  - [Anthropic](https://console.anthropic.com/settings/keys)
-  - [Google AI](https://console.cloud.google.com/apis/api/aiplatform.googleapis.com/credentials?project=your-project-id)
-  - [Mistral AI](https://mistral.ai/settings/keys)
-  - [Meta AI (Llama)](https://ai.meta.com/resources/models-and-libraries/llama-downloads/)
-  - [Grok](https://grok.com)
-  
+   you will need to add your API keys for the different models you want to use
+   you can get the keys from the following links:
    ```
 
+- [OpenAI](https://platform.openai.com/api-keys)
+- [Anthropic](https://console.anthropic.com/settings/keys)
+- [Google AI](https://console.cloud.google.com/apis/api/aiplatform.googleapis.com/credentials?project=your-project-id)
+- [Mistral AI](https://mistral.ai/settings/keys)
+- [Meta AI (Llama)](https://ai.meta.com/resources/models-and-libraries/llama-downloads/)
+- [Grok](https://grok.com)
+
+````
+
 1. Run the development server:
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
-   ```
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+````
 
 2. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
